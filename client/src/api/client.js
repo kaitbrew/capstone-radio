@@ -1,0 +1,74 @@
+const BASE_URL = "http://localhost:5555";
+
+async function request(path, options = {}) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include", // sends session cookie automatically
+    ...options,
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Something went wrong.");
+  }
+
+  return data;
+}
+
+// ── Auth ────────────────────────────────────────────────
+export const authAPI = {
+  register: (username, email, password) =>
+    request("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ username, email, password }),
+    }),
+
+  login: (username, password) =>
+    request("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ username, password }),
+    }),
+
+  logout: () => request("/auth/logout", { method: "DELETE" }),
+
+  me: () => request("/auth/me"),
+};
+
+// ── Stations ─────────────────────────────────────────────
+export const stationsAPI = {
+  top: (page = 1) => request(`/stations/top?page=${page}`),
+
+  search: (q, page = 1) => request(`/stations/search?q=${encodeURIComponent(q)}&page=${page}`),
+
+  byGenre: (genre, page = 1) => request(`/stations/genre/${encodeURIComponent(genre)}?page=${page}`),
+
+  byCountry: (code, page = 1) => request(`/stations/country/${code}?page=${page}`),
+
+  tags: () => request("/stations/tags"),
+
+  countries: () => request("/stations/countries"),
+};
+
+// ── Favorites ─────────────────────────────────────────────
+export const favoritesAPI = {
+  getAll: () => request("/favorites"),
+
+  add: (station) =>
+    request("/favorites/add", {
+      method: "POST",
+      body: JSON.stringify({
+        station_uuid: station.stationuuid,
+        station_name: station.name,
+        station_url: station.url_resolved,
+        station_favicon: station.favicon,
+        station_tags: station.tags,
+        station_country: station.country,
+      }),
+    }),
+
+  remove: (stationUuid) =>
+    request(`/favorites/remove/${stationUuid}`, { method: "DELETE" }),
+
+  check: (stationUuid) => request(`/favorites/check/${stationUuid}`),
+};
