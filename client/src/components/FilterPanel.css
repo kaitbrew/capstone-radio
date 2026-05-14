@@ -1,0 +1,80 @@
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px auto;
+  max-width: 700px;
+  width: 100%;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  min-width: 55px;
+  opacity: 0.6;
+}
+
+.filter-chips-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0; /* allows flex child to shrink */
+  flex: 1;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none; /* hide scrollbar in Firefox */
+  -ms-overflow-style: none; /* hide scrollbar in IE */
+  padding-bottom: 2px;
+}
+
+.filter-chips::-webkit-scrollbar {
+  display: none; /* hide scrollbar in Chrome/Safari */
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.filter-chip:hover {
+  opacity: 1;
+}
+
+.filter-chip.active {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.filter-chip-count {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.filter-scroll-hint {
+  font-size: 0.7rem;
+  opacity: 0.4;
+  white-space: nowrap;
+}

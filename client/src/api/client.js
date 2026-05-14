@@ -37,9 +37,11 @@ export const authAPI = {
 
 // ── Stations ─────────────────────────────────────────────
 export const stationsAPI = {
-  top: (page = 1) => request(`/stations/top?page=${page}`),
+top: (page = 1, limit = 20) =>
+  request(`/stations/top?page=${page}&limit=${limit}`),
 
-  search: (q, page = 1) => request(`/stations/search?q=${encodeURIComponent(q)}&page=${page}`),
+search: (q, page = 1, limit = 20) =>
+  request(`/stations/search?q=${encodeURIComponent(q)}&page=${page}&limit=${limit}`),
 
   byGenre: (genre, page = 1) => request(`/stations/genre/${encodeURIComponent(genre)}?page=${page}`),
 

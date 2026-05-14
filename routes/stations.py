@@ -7,6 +7,7 @@ RADIO_BROWSER_BASE = "https://de1.api.radio-browser.info/json"
 PAGE_SIZE = 20
 
 
+
 def _radio_get(endpoint, params=None):
     """Helper: GET from Radio Browser API with a browser-like User-Agent (required)."""
     headers = {"User-Agent": "RadioBrowserApp/1.0"}
@@ -33,6 +34,7 @@ def search():
     """
     query = request.args.get("q", "").strip()
     page = max(int(request.args.get("page", 1)), 1)
+    limit = min(int(request.args.get("limit", PAGE_SIZE)), 200)
 
     if not query:
         return jsonify({"error": "Search query 'q' is required."}), 400
@@ -42,7 +44,7 @@ def search():
         "stations/search",
         params={
             "name": query,
-            "limit": PAGE_SIZE,
+            "limit": limit,
             "offset": offset,
             "hidebroken": "true",
             "order": "clickcount",
@@ -69,12 +71,13 @@ def by_genre(genre):
     """
     page = max(int(request.args.get("page", 1)), 1)
     offset = (page - 1) * PAGE_SIZE
+    limit = min(int(request.args.get("limit", PAGE_SIZE)), 200)
 
     data, err = _radio_get(
         "stations/search",
         params={
             "tag": genre,
-            "limit": PAGE_SIZE,
+            "limit": limit,
             "offset": offset,
             "hidebroken": "true",
             "order": "clickcount",
@@ -134,12 +137,13 @@ def top_stations():
     Query params: page (default 1)
     """
     page = max(int(request.args.get("page", 1)), 1)
+    limit = min(int(request.args.get("limit", PAGE_SIZE)), 200)
     offset = (page - 1) * PAGE_SIZE
 
     data, err = _radio_get(
         "stations/search",
         params={
-            "limit": PAGE_SIZE,
+            "limit": limit,
             "offset": offset,
             "hidebroken": "true",
             "order": "clickcount",

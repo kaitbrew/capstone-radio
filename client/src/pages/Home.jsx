@@ -1,47 +1,101 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { stationsAPI, favoritesAPI } from "../api/client";
 import { useAuth } from "../context/useAuth";
 import StationCard from "../components/StationCard";
 import PlayerModal from "../components/PlayerModal";
 import Pagination from "../components/Pagination";
+import FilterPanel from "../components/FilterPanel";
 import "./Home.css";
-import { useNavigate } from "react-router-dom";
+
+const PAGE_SIZE = 20;
 
 export default function Home() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [stations, setStations] = useState([]);
-  const [favorites, setFavorites] = useState(new Set()); // set of station UUIDs
+  const [allStations, setAllStations] = useState([]);
+  const [favorites, setFavorites] = useState(new Set());
   const [query, setQuery] = useState("");
-  const [activeQuery, setActiveQuery] = useState(""); // what was actually searched
+  const [activeQuery, setActiveQuery] = useState("");
+  const [activeTag, setActiveTag] = useState(null);
+  const [activeCountry, setActiveCountry] = useState(null);
   const [page, setPage] = useState(1);
-  const [hasNext, setHasNext] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedStation, setSelectedStation] = useState(null);
-  const navigate = useNavigate();
   const [toast, setToast] = useState(null);
 
-  // Fetch favorites so we can show heart state on cards
-  useEffect(() => {
-    if (!user) return;
-    favoritesAPI
-      .getAll()
-      .then((data) =>
-        setFavorites(new Set(data.favorites.map((f) => f.station_uuid))),
-      )
-      .catch(() => {});
-  }, [user]);
+  // ── Derived data ─────────────────────────────────────────
 
-  const fetchStations = useCallback(async (searchQuery, pageNum) => {
+  const filteredStations = allStations
+    .filter((s) =>
+      !activeTag ||
+      s.tags?.split(",").map((t) => t.trim()).includes(activeTag)
+    )
+    .filter((s) => !activeCountry || s.country === activeCountry);
+
+  const paginatedStations = filteredStations.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
+
+  const totalHasNext = filteredStations.length > page * PAGE_SIZE;
+
+  // Tags calculated from country-filtered stations only
+  const tagCounts = (activeCountry
+    ? allStations.filter((s) => s.country === activeCountry)
+    : allStations)
+    .flatMap((s) => s.tags?.split(",").map((t) => t.trim()).filter(Boolean) || [])
+    .reduce((acc, tag) => { acc[tag] = (acc[tag] || 0) + 1; return acc; }, {});
+
+  const sortedTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20);
+
+  // Countries calculated from tag-filtered stations only
+  const countryCounts = (activeTag
+    ? allStations.filter((s) =>
+        s.tags?.split(",").map((t) => t.trim()).includes(activeTag)
+      )
+    : allStations)
+    .reduce((acc, s) => {
+      if (s.country) acc[s.country] = (acc[s.country] || 0) + 1;
+      return acc;
+    }, {});
+
+  const sortedCountries = Object.entries(countryCounts)
+    .sort((a, b) => b[1] - a[1]);
+
+  // ── Helpers ───────────────────────────────────────────────
+
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleTagSelect = (tag) => {
+    setActiveTag(tag);
+    setPage(1);
+  };
+
+  const handleCountrySelect = (country) => {
+    setActiveCountry(country);
+    setPage(1);
+  };
+
+  // ── Data fetching ─────────────────────────────────────────
+
+  const fetchStations = useCallback(async (searchQuery) => {
     setLoading(true);
     setError(null);
     try {
-      const data = searchQuery
-        ? await stationsAPI.search(searchQuery, pageNum)
-        : await stationsAPI.top(pageNum);
-      setStations(data.stations);
-      setHasNext(data.has_next);
+      const allData = searchQuery
+        ? await stationsAPI.search(searchQuery, 1, 200)
+        : await stationsAPI.top(1, 200);
+      setAllStations(allData.stations);
+      setStations(allData.stations);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -49,20 +103,27 @@ export default function Home() {
     }
   }, []);
 
-  //toast helper to show messages for actions like adding/removing favorites, errors, etc.
-  const showToast = (message) => {
-    setToast(message);
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  // Fetch whenever page or activeQuery changes
   useEffect(() => {
-    fetchStations(activeQuery, page);
-  }, [activeQuery, page, fetchStations]);
+    if (!user) return;
+    favoritesAPI
+      .getAll()
+      .then((data) =>
+        setFavorites(new Set(data.favorites.map((f) => f.station_uuid)))
+      )
+      .catch(() => {});
+  }, [user]);
+
+  useEffect(() => {
+    fetchStations(activeQuery);
+  }, [activeQuery, fetchStations]);
+
+  // ── Handlers ──────────────────────────────────────────────
 
   const handleSearch = (e) => {
     e.preventDefault();
     setPage(1);
+    setActiveTag(null);
+    setActiveCountry(null);
     setActiveQuery(query.trim());
   };
 
@@ -73,7 +134,7 @@ export default function Home() {
 
   const handleFavoriteToggle = async (station) => {
     if (!user) {
-      navigate("/login");
+      showToast("Please log in to save favorites.");
       return;
     }
     const uuid = station.stationuuid;
@@ -96,6 +157,8 @@ export default function Home() {
     }
   };
 
+  // ── Render ────────────────────────────────────────────────
+
   return (
     <main className="home">
       <section className="home-hero">
@@ -116,6 +179,15 @@ export default function Home() {
         </form>
       </section>
 
+      <FilterPanel
+        tags={sortedTags}
+        countries={sortedCountries}
+        activeTag={activeTag}
+        activeCountry={activeCountry}
+        onTagSelect={handleTagSelect}
+        onCountrySelect={handleCountrySelect}
+      />
+
       <section className="home-results">
         {activeQuery && (
           <div className="home-results-header">
@@ -127,6 +199,8 @@ export default function Home() {
               onClick={() => {
                 setQuery("");
                 setActiveQuery("");
+                setActiveTag(null);
+                setActiveCountry(null);
                 setPage(1);
               }}
             >
@@ -135,15 +209,17 @@ export default function Home() {
           </div>
         )}
 
-        {loading && <p className="home-status">Loading stations...</p>}
+        {loading && (
+          <p className="home-status">Loading stations (this may take a moment)...</p>
+        )}
         {error && <p className="home-status home-error">{error}</p>}
 
-        {!loading && !error && stations.length === 0 && (
+        {!loading && !error && filteredStations.length === 0 && (
           <p className="home-status">No stations found.</p>
         )}
 
         <div className="home-grid">
-          {stations.map((station) => (
+          {paginatedStations.map((station) => (
             <StationCard
               key={station.stationuuid}
               station={station}
@@ -154,10 +230,10 @@ export default function Home() {
           ))}
         </div>
 
-        {!loading && stations.length > 0 && (
+        {!loading && filteredStations.length > 0 && (
           <Pagination
             page={page}
-            hasNext={hasNext}
+            hasNext={totalHasNext}
             onPageChange={handlePageChange}
           />
         )}
@@ -169,6 +245,7 @@ export default function Home() {
           onClose={() => setSelectedStation(null)}
         />
       )}
+
       {toast && <div className="toast">{toast}</div>}
     </main>
   );
