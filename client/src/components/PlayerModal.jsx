@@ -9,40 +9,36 @@ export default function PlayerModal({ station, onClose }) {
 
   // Handle station changes properly
   useEffect(() => {
-    const audio = audioRef.current;
+  const audio = audioRef.current;
 
-    if (!audio || !streamUrl) return;
+  setStreamError(null);
 
+  if (!audio || !streamUrl) return;
+
+  audio.pause();
+  audio.src = streamUrl;
+
+  const handleError = () => {
+    setStreamError("This stream couldn't be played.");
+  };
+
+  const handleCanPlay = () => {
     setStreamError(null);
+  };
 
-    // Fully reset previous stream
+  audio.addEventListener("error", handleError);
+  audio.addEventListener("canplay", handleCanPlay);
+
+  audio.play().catch((err) => {
+    console.log("Autoplay prevented:", err);
+  });
+
+  return () => {
     audio.pause();
-    audio.removeAttribute("src");
-    audio.load();
-
-    // Assign new stream
-    audio.src = streamUrl;
-
-    // Force reload + autoplay
-    audio.load();
-
-    const playPromise = audio.play();
-
-    if (playPromise !== undefined) {
-      playPromise.catch((err) => {
-        console.error("Playback failed:", err);
-        setStreamError(
-          "This stream couldn't be played by your browser."
-        );
-      });
-    }
-
-    return () => {
-      audio.pause();
-      audio.removeAttribute("src");
-      audio.load();
-    };
-  }, [streamUrl]);
+    audio.removeEventListener("error", handleError);
+    audio.removeEventListener("canplay", handleCanPlay);
+  };
+}, [streamUrl]);
 
   // Close on Escape
   useEffect(() => {
@@ -78,40 +74,24 @@ export default function PlayerModal({ station, onClose }) {
           )}
         </div>
 
-        <h2 className="modal-name">
-          {station.name || station.station_name}
-        </h2>
+        <h2 className="modal-name">{station.name || station.station_name}</h2>
 
         <p className="modal-meta">
           {[
             station.country || station.station_country,
-            station.tags?.split(",")[0] ||
-              station.station_tags?.split(",")[0],
+            station.tags?.split(",")[0] || station.station_tags?.split(",")[0],
           ]
             .filter(Boolean)
             .join(" · ")}
         </p>
 
         {streamUrl ? (
-          <audio
-            ref={audioRef}
-            className="modal-player"
-            controls
-            onError={() =>
-              setStreamError(
-                "This stream couldn't be loaded. It may be unavailable or unsupported by your browser."
-              )
-            }
-          />
+          <audio ref={audioRef} className="modal-player" controls />
         ) : (
-          <p className="modal-no-stream">
-            No stream URL available.
-          </p>
+          <p className="modal-no-stream">No stream URL available.</p>
         )}
 
-        {streamError && (
-          <p className="modal-error">{streamError}</p>
-        )}
+        {streamError && <p className="modal-error">{streamError}</p>}
       </div>
     </div>
   );

@@ -17,13 +17,9 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-brand">
-        📻 RadioBrowser
-      </Link>
-
       <div className="navbar-links">
-        <Link to="/" className="navbar-link">
-          Discover
+        <Link to="/" className="navbar-brand">
+          📻 KB Radio
         </Link>
 
         {user ? (
