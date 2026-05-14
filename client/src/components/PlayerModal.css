@@ -1,0 +1,20 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.modal {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  pointer-events: all;
+  max-width: 360px;
+  width: 100%;
+}
+
+.modal-favicon img {
+  height: 100px;
+  width: auto;
+}

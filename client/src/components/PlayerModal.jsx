@@ -1,36 +1,70 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./PlayerModal.css";
 
 export default function PlayerModal({ station, onClose }) {
+  const [streamError, setStreamError] = useState(null);
   const audioRef = useRef(null);
 
-  // Stop audio when modal closes or station changes
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-      }
-    };
-  }, [station]);
+  const streamUrl = station?.url_resolved || station?.station_url;
 
-  // Close on Escape key
+  // Handle station changes properly
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio || !streamUrl) return;
+
+    setStreamError(null);
+
+    // Fully reset previous stream
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+
+    // Assign new stream
+    audio.src = streamUrl;
+
+    // Force reload + autoplay
+    audio.load();
+
+    const playPromise = audio.play();
+
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.error("Playback failed:", err);
+        setStreamError(
+          "This stream couldn't be played by your browser."
+        );
+      });
+    }
+
+    return () => {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    };
+  }, [streamUrl]);
+
+  // Close on Escape
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "Escape") onClose();
     };
+
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+    };
   }, [onClose]);
 
   if (!station) return null;
 
-  const streamUrl = station.url_resolved || station.station_url;
-
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>✕</button>
+        <button className="modal-close" onClick={onClose}>
+          ✕
+        </button>
 
         <div className="modal-favicon">
           {station.favicon || station.station_favicon ? (
@@ -44,12 +78,15 @@ export default function PlayerModal({ station, onClose }) {
           )}
         </div>
 
-        <h2 className="modal-name">{station.name || station.station_name}</h2>
+        <h2 className="modal-name">
+          {station.name || station.station_name}
+        </h2>
 
         <p className="modal-meta">
           {[
             station.country || station.station_country,
-            station.tags?.split(",")[0] || station.station_tags?.split(",")[0],
+            station.tags?.split(",")[0] ||
+              station.station_tags?.split(",")[0],
           ]
             .filter(Boolean)
             .join(" · ")}
@@ -59,12 +96,21 @@ export default function PlayerModal({ station, onClose }) {
           <audio
             ref={audioRef}
             className="modal-player"
-            src={streamUrl}
             controls
-            autoPlay
+            onError={() =>
+              setStreamError(
+                "This stream couldn't be loaded. It may be unavailable or unsupported by your browser."
+              )
+            }
           />
         ) : (
-          <p className="modal-no-stream">No stream URL available.</p>
+          <p className="modal-no-stream">
+            No stream URL available.
+          </p>
+        )}
+
+        {streamError && (
+          <p className="modal-error">{streamError}</p>
         )}
       </div>
     </div>

@@ -27,7 +27,9 @@ export default function Home() {
     if (!user) return;
     favoritesAPI
       .getAll()
-      .then((data) => setFavorites(new Set(data.favorites.map((f) => f.station_uuid))))
+      .then((data) =>
+        setFavorites(new Set(data.favorites.map((f) => f.station_uuid))),
+      )
       .catch(() => {});
   }, [user]);
 
@@ -49,9 +51,9 @@ export default function Home() {
 
   //toast helper to show messages for actions like adding/removing favorites, errors, etc.
   const showToast = (message) => {
-  setToast(message);
-  setTimeout(() => setToast(null), 3000);
-};
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   // Fetch whenever page or activeQuery changes
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-const handleFavoriteToggle = async (station) => {
+  const handleFavoriteToggle = async (station) => {
     if (!user) {
       navigate("/login");
       return;
@@ -153,7 +155,11 @@ const handleFavoriteToggle = async (station) => {
         </div>
 
         {!loading && stations.length > 0 && (
-          <Pagination page={page} hasNext={hasNext} onPageChange={handlePageChange} />
+          <Pagination
+            page={page}
+            hasNext={hasNext}
+            onPageChange={handlePageChange}
+          />
         )}
       </section>
 
