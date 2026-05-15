@@ -19,7 +19,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-links">
         <Link to="/" className="navbar-brand">
-          📻 Discover
+          📻 KB Radio
         </Link>
 
         {user ? (
