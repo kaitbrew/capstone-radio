@@ -1,3 +1,4 @@
+from capstone.summative_2 import app
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -27,5 +28,8 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp)
     app.register_blueprint(stations_bp)
     app.register_blueprint(favorites_bp)
+
+    with app.app_context():
+        db.create_all()
 
     return app
