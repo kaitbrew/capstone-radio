@@ -1,0 +1,41 @@
+.skeleton-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.skeleton-favicon {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: var(--bg-3);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-line {
+  border-radius: 4px;
+  background: var(--bg-3);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-name {
+  width: 80%;
+  height: 12px;
+  animation-delay: 0.1s;
+}
+
+.skeleton-meta {
+  width: 55%;
+  height: 10px;
+  animation-delay: 0.2s;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.9; }
+}

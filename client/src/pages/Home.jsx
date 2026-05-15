@@ -30,43 +30,63 @@ export default function Home() {
   // ── Derived data ─────────────────────────────────────────
 
   const filteredStations = allStations
-    .filter((s) =>
-      !activeTag ||
-      s.tags?.split(",").map((t) => t.trim()).includes(activeTag)
+    .filter(
+      (s) =>
+        !activeTag ||
+        s.tags
+          ?.split(",")
+          .map((t) => t.trim())
+          .includes(activeTag),
     )
     .filter((s) => !activeCountry || s.country === activeCountry);
 
   const paginatedStations = filteredStations.slice(
     (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE
+    page * PAGE_SIZE,
   );
 
   const totalHasNext = filteredStations.length > page * PAGE_SIZE;
 
   // Tags calculated from country-filtered stations only
-  const tagCounts = (activeCountry
-    ? allStations.filter((s) => s.country === activeCountry)
-    : allStations)
-    .flatMap((s) => s.tags?.split(",").map((t) => t.trim()).filter(Boolean) || [])
-    .reduce((acc, tag) => { acc[tag] = (acc[tag] || 0) + 1; return acc; }, {});
+  const tagCounts = (
+    activeCountry
+      ? allStations.filter((s) => s.country === activeCountry)
+      : allStations
+  )
+    .flatMap(
+      (s) =>
+        s.tags
+          ?.split(",")
+          .map((t) => t.trim())
+          .filter(Boolean) || [],
+    )
+    .reduce((acc, tag) => {
+      acc[tag] = (acc[tag] || 0) + 1;
+      return acc;
+    }, {});
 
   const sortedTags = Object.entries(tagCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 20);
 
   // Countries calculated from tag-filtered stations only
-  const countryCounts = (activeTag
-    ? allStations.filter((s) =>
-        s.tags?.split(",").map((t) => t.trim()).includes(activeTag)
-      )
-    : allStations)
-    .reduce((acc, s) => {
-      if (s.country) acc[s.country] = (acc[s.country] || 0) + 1;
-      return acc;
-    }, {});
+  const countryCounts = (
+    activeTag
+      ? allStations.filter((s) =>
+          s.tags
+            ?.split(",")
+            .map((t) => t.trim())
+            .includes(activeTag),
+        )
+      : allStations
+  ).reduce((acc, s) => {
+    if (s.country) acc[s.country] = (acc[s.country] || 0) + 1;
+    return acc;
+  }, {});
 
-  const sortedCountries = Object.entries(countryCounts)
-    .sort((a, b) => b[1] - a[1]);
+  const sortedCountries = Object.entries(countryCounts).sort(
+    (a, b) => b[1] - a[1],
+  );
 
   // ── Helpers ───────────────────────────────────────────────
 
@@ -108,7 +128,7 @@ export default function Home() {
     favoritesAPI
       .getAll()
       .then((data) =>
-        setFavorites(new Set(data.favorites.map((f) => f.station_uuid)))
+        setFavorites(new Set(data.favorites.map((f) => f.station_uuid))),
       )
       .catch(() => {});
   }, [user]);
@@ -162,7 +182,7 @@ export default function Home() {
   return (
     <main className="home">
       <section className="home-hero">
-        <h1 className="home-title">Discover Radio</h1>
+        <h1 className="home-title">KB Radio</h1>
         <p className="home-subtitle">50,000+ stations from around the world</p>
 
         <form className="home-search" onSubmit={handleSearch}>
@@ -210,7 +230,9 @@ export default function Home() {
         )}
 
         {loading && (
-          <p className="home-status">Loading stations (this may take a moment)...</p>
+          <p className="home-status">
+            Loading stations (this may take a moment)...
+          </p>
         )}
         {error && <p className="home-status home-error">{error}</p>}
 

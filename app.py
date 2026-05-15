@@ -7,14 +7,18 @@ from config import Config
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
-
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
     db.init_app(app)
     bcrypt.init_app(app)
-    CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+
+    CORS(app,
+         supports_credentials=True,
+         origins=["http://localhost:5173"],
+         allow_headers=["Content-Type"],
+         methods=["GET", "POST", "DELETE", "OPTIONS"])
 
     from routes.auth import auth_bp
     from routes.stations import stations_bp

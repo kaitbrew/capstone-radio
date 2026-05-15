@@ -40,7 +40,11 @@ export default function Login() {
     setError(null);
     setLoading(true);
     try {
-      await register(registerForm.username, registerForm.email, registerForm.password);
+      await register(
+        registerForm.username,
+        registerForm.email,
+        registerForm.password,
+      );
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -52,7 +56,7 @@ export default function Login() {
   return (
     <main className="login">
       <div className="login-card">
-        <h1 className="login-title">📻 RadioBrowser</h1>
+        <h1 className="login-title">KB Radio</h1>
         <p className="login-subtitle">Sign in to save your favorite stations</p>
 
         {error && <p className="login-error">{error}</p>}
@@ -63,7 +67,9 @@ export default function Login() {
             type="text"
             placeholder="Username"
             value={loginForm.username}
-            onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
+            onChange={(e) =>
+              setLoginForm({ ...loginForm, username: e.target.value })
+            }
             required
           />
           <input
@@ -71,7 +77,9 @@ export default function Login() {
             type="password"
             placeholder="Password"
             value={loginForm.password}
-            onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+            onChange={(e) =>
+              setLoginForm({ ...loginForm, password: e.target.value })
+            }
             required
           />
           <button className="login-btn" type="submit" disabled={loading}>
@@ -81,7 +89,10 @@ export default function Login() {
 
         <p className="login-register-prompt">
           Don't have an account?{" "}
-          <button className="login-register-link" onClick={() => setShowRegister(true)}>
+          <button
+            className="login-register-link"
+            onClick={() => setShowRegister(true)}
+          >
             Register
           </button>
         </p>
@@ -89,9 +100,18 @@ export default function Login() {
 
       {/* Register Modal */}
       {showRegister && (
-        <div className="modal-overlay" onClick={() => setShowRegister(false)}>
-          <div className="modal register-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowRegister(false)}>
+        <div
+          className="modal-overlay register-overlay"
+          onClick={() => setShowRegister(false)}
+        >
+          <div
+            className="modal register-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              onClick={() => setShowRegister(false)}
+            >
               ✕
             </button>
             <h2 className="modal-title">Create Account</h2>
