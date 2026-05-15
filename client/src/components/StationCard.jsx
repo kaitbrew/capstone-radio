@@ -34,7 +34,7 @@ export default function StationCard({ station, isFavorite, onFavoriteToggle, onC
         onClick={handleFavoriteClick}
         title={isFavorite ? "Remove from favorites" : "Add to favorites"}
       >
-        {isFavorite ? "♥" : "♡"}
+        {isFavorite ? "❤️" : "🤍"}
       </button>
     </div>
   );

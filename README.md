@@ -111,7 +111,7 @@ Both servers must be running at the same time.
 ### Authentication
 - Session-based auth (no JWT)
 - Passwords hashed and salted with bcrypt
-- Register via popup modal on the login page
+- Register via the login page
 - Session persists across page refreshes via `/auth/me` check on mount
 
 ### Favorites
