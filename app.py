@@ -16,7 +16,7 @@ def create_app(config_class=Config):
 
     CORS(app,
          supports_credentials=True,
-         origins=["http://localhost:5173", "http://localhost:5174", "https://kb-radio.onrender.com"]
+         origins=["http://localhost:5173", "http://localhost:5174", "https://kb-radio.onrender.com"],
          allow_headers=["Content-Type"],
          methods=["GET", "POST", "DELETE", "OPTIONS"])
 
