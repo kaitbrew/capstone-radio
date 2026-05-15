@@ -19,7 +19,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-links">
         <Link to="/" className="navbar-brand">
-          📻 KB Radio
+          📻 Discover
         </Link>
 
         {user ? (
@@ -34,7 +34,7 @@ export default function Navbar() {
           </>
         ) : (
           <Link to="/login" className="navbar-link navbar-login">
-            Login
+            Login/Register
           </Link>
         )}
       </div>

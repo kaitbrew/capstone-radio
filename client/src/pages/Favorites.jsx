@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { favoritesAPI } from "../api/client";
 import StationCard from "../components/StationCard";
 import PlayerModal from "../components/PlayerModal";
@@ -37,8 +38,6 @@ export default function Favorites() {
     }
   };
 
-  // Favorites page stations use station_uuid instead of stationuuid
-  // so we normalize for StationCard's isFavorite check
   const normalizeForCard = (fav) => ({
     ...fav,
     stationuuid: fav.station_uuid,
@@ -53,18 +52,27 @@ export default function Favorites() {
     <main className="favorites">
       <section className="favorites-header">
         <h1 className="favorites-title">Your Favorites</h1>
-        <p className="favorites-count">
-          {favorites.length} saved station{favorites.length !== 1 ? "s" : ""}
-        </p>
+        {!loading && favorites.length > 0 && (
+          <p className="favorites-count">
+            {favorites.length} saved station{favorites.length !== 1 ? "s" : ""}
+          </p>
+        )}
       </section>
 
       {loading && <p className="favorites-status">Loading favorites...</p>}
       {error && <p className="favorites-status favorites-error">{error}</p>}
 
       {!loading && !error && favorites.length === 0 && (
-        <p className="favorites-status">
-          No favorites yet. Discover stations on the home page and click ♡ to save them.
-        </p>
+        <div className="favorites-empty">
+          <div className="favorites-empty-icon">📻</div>
+          <h2 className="favorites-empty-title">Nothing saved yet</h2>
+          <p className="favorites-empty-body">
+            Browse the airwaves and click ❤️ on any station to save it here.
+          </p>
+          <Link to="/" className="favorites-empty-cta">
+            Discover stations →
+          </Link>
+        </div>
       )}
 
       <div className="favorites-grid">

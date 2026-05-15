@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 12px auto;
-  max-width: 700px;
+  margin: 8px auto 4px;
+  max-width: 540px;
   width: 100%;
 }
 
@@ -14,20 +14,20 @@
 }
 
 .filter-label {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.68rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   white-space: nowrap;
-  min-width: 55px;
-  opacity: 0.6;
+  min-width: 52px;
+  color: var(--text-muted);
 }
 
 .filter-chips-wrapper {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-width: 0; /* allows flex child to shrink */
+  min-width: 0;
   flex: 1;
 }
 
@@ -35,46 +35,93 @@
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  scrollbar-width: none; /* hide scrollbar in Firefox */
-  -ms-overflow-style: none; /* hide scrollbar in IE */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding-bottom: 2px;
 }
 
 .filter-chips::-webkit-scrollbar {
-  display: none; /* hide scrollbar in Chrome/Safari */
+  display: none;
 }
 
 .filter-chip {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
+  gap: 5px;
+  padding: 4px 12px;
   border-radius: 999px;
-  border: 1px solid currentColor;
+  border: 1px solid var(--border);
   background: transparent;
+  color: var(--text-muted);
   white-space: nowrap;
-  cursor: pointer;
-  font-size: 0.8rem;
-  opacity: 0.7;
-  transition: opacity 0.15s;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  transition: all 0.15s;
 }
 
 .filter-chip:hover {
-  opacity: 1;
+  border-color: var(--accent);
+  color: var(--text);
 }
 
 .filter-chip.active {
-  opacity: 1;
-  font-weight: 600;
+  border-color: var(--accent);
+  background: rgba(232, 160, 160, 0.1);
+  color: var(--accent);
 }
 
 .filter-chip-count {
-  font-size: 0.7rem;
-  opacity: 0.7;
+  font-size: 0.65rem;
+  opacity: 0.6;
+  font-family: var(--font-mono);
 }
 
 .filter-scroll-hint {
-  font-size: 0.7rem;
-  opacity: 0.4;
+  font-size: 0.65rem;
+  color: var(--text-muted);
   white-space: nowrap;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* ── Active filter indicator ───────────────────────────── */
+.filter-active-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: rgba(232, 160, 160, 0.07);
+  border: 1px solid rgba(232, 160, 160, 0.2);
+  border-radius: 999px;
+  margin-top: 2px;
+  animation: fadeIn 0.2s ease;
+}
+
+.filter-active-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.filter-active-label strong {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.filter-clear-btn {
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  transition: opacity 0.15s;
+  padding: 0;
+}
+
+.filter-clear-btn:hover {
+  opacity: 0.7;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

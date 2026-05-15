@@ -10,6 +10,8 @@ export default function FilterPanel({
 }) {
   if (!tags.length && !countries.length) return null;
 
+  const hasActiveFilters = activeTag || activeCountry;
+
   return (
     <div className="filter-panel">
       {tags.length > 0 && (
@@ -51,6 +53,26 @@ export default function FilterPanel({
             </div>
             <span className="filter-scroll-hint">scroll →</span>
           </div>
+        </div>
+      )}
+
+      {hasActiveFilters && (
+        <div className="filter-active-bar">
+          <span className="filter-active-label">
+            Filtering by
+            {activeTag && <strong> {activeTag}</strong>}
+            {activeTag && activeCountry && " + "}
+            {activeCountry && <strong> {activeCountry}</strong>}
+          </span>
+          <button
+            className="filter-clear-btn"
+            onClick={() => {
+              onTagSelect(null);
+              onCountrySelect(null);
+            }}
+          >
+            × clear filters
+          </button>
         </div>
       )}
     </div>

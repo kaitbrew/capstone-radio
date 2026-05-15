@@ -1,0 +1,143 @@
+.login {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 36px;
+}
+
+.login-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.login-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.04em;
+  margin-bottom: 28px;
+}
+
+.login-error {
+  font-size: 0.78rem;
+  color: var(--error);
+  margin-bottom: 16px;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-input {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.login-input::placeholder {
+  color: var(--text-muted);
+}
+
+.login-input:focus {
+  border-color: var(--accent);
+}
+
+.login-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: var(--radius);
+  padding: 11px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  transition: background 0.15s;
+}
+
+.login-btn:hover:not(:disabled) {
+  background: var(--accent-dim);
+}
+
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-register-prompt {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 20px;
+  letter-spacing: 0.03em;
+}
+
+.login-register-link {
+  color: var(--accent);
+  font-size: 0.78rem;
+  transition: color 0.15s;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.login-register-link:hover {
+  color: var(--accent-dim);
+}
+
+/* ── Register modal ────────────────────────────────────── */
+.register-modal {
+  max-width: 380px;
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px;
+  position: relative;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.register-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: all;
+}
+
+.register-overlay .register-modal {
+  position: static;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* register modal uses the shared modal-overlay from PlayerModal */

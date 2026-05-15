@@ -3,17 +3,25 @@ const BASE_URL = "http://localhost:5555";
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: { "Content-Type": "application/json" },
-    credentials: "include", // sends session cookie automatically
+    credentials: "include",
     ...options,
   });
 
-  const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.error || "Something went wrong.");
+    // try to parse error message, but don't crash if body isn't JSON
+    let message = "Something went wrong.";
+    try {
+      const data = await res.json();
+      message = data.error || message;
+    } catch {
+      // response wasn't JSON, use status text instead
+      message = res.statusText || message;
+    }
+    throw new Error(message);
   }
 
-  return data;
+  return res.json();
 }
 
 // ── Auth ────────────────────────────────────────────────
