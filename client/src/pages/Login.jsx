@@ -8,13 +8,11 @@ export default function Login() {
   const navigate = useNavigate();
 
   const [showRegister, setShowRegister] = useState(false);
-  const [error, setError] = useState(null);
+  const [loginError, setLoginError] = useState(null);
+  const [registerError, setRegisterError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Login form state
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
-
-  // Register form state
   const [registerForm, setRegisterForm] = useState({
     username: "",
     email: "",
@@ -23,13 +21,13 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null);
+    setLoginError(null);
     setLoading(true);
     try {
       await login(loginForm.username, loginForm.password);
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      setLoginError(err.message);
     } finally {
       setLoading(false);
     }
@@ -37,7 +35,7 @@ export default function Login() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError(null);
+    setRegisterError(null);
     setLoading(true);
     try {
       await register(
@@ -47,7 +45,7 @@ export default function Login() {
       );
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      setRegisterError(err.message);
     } finally {
       setLoading(false);
     }
@@ -59,7 +57,7 @@ export default function Login() {
         <h1 className="login-title">KB Radio</h1>
         <p className="login-subtitle">Sign in to save your favorite stations</p>
 
-        {error && <p className="login-error">{error}</p>}
+        {loginError && <p className="login-error">{loginError}</p>}
 
         <form className="login-form" onSubmit={handleLogin}>
           <input
@@ -98,11 +96,13 @@ export default function Login() {
         </p>
       </div>
 
-      {/* Register Modal */}
       {showRegister && (
         <div
           className="modal-overlay register-overlay"
-          onClick={() => setShowRegister(false)}
+          onClick={() => {
+            setShowRegister(false);
+            setRegisterError(null);
+          }}
         >
           <div
             className="modal register-modal"
@@ -110,13 +110,16 @@ export default function Login() {
           >
             <button
               className="modal-close"
-              onClick={() => setShowRegister(false)}
+              onClick={() => {
+                setShowRegister(false);
+                setRegisterError(null);
+              }}
             >
               ✕
             </button>
             <h2 className="modal-title">Create Account</h2>
 
-            {error && <p className="login-error">{error}</p>}
+            {registerError && <p className="login-error">{registerError}</p>}
 
             <form className="login-form" onSubmit={handleRegister}>
               <input
@@ -145,7 +148,10 @@ export default function Login() {
                 placeholder="Password (min 6 characters)"
                 value={registerForm.password}
                 onChange={(e) =>
-                  setRegisterForm({ ...registerForm, password: e.target.value })
+                  setRegisterForm({
+                    ...registerForm,
+                    password: e.target.value,
+                  })
                 }
                 required
               />
